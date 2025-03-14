@@ -26,10 +26,6 @@ jobs:
         run: |
           pip install datasette datasette-sitemap datasette-block-robots datasette-backup datasette-search-all datasette-external-links-new-tabs datasette-copyable datasette-publish-vercel
           pip install sqlite-utils
-      - name: Install Dolt
-        used: sebhoss/dolt-installer@v1
-        with:
-          version: latest
       - name: Export data from dolt
         uses: scillidan/dolt-action@master
         id: 'dolt_import'
