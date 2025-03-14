@@ -34,4 +34,4 @@ jobs:
           datasette publish vercel reference.db \
             --metadata metadata.yml \
             --token $VERCEL_TOKEN \
-            --project database-site
+            --project datasette-site
