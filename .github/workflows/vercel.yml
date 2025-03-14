@@ -1,0 +1,52 @@
+name: Deploy to Vercel
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install datasette datasette-sitemap datasette-block-robots datasette-backup datasette-search-all datasette-external-links-new-tabs datasette-copyable datasette-publish-vercel
+      - name: Get database_csv latest release
+        id: get_latest_release
+        run: |
+          response=$(curl -s https://api.github.com/repos/scillidan/database_csv/releases/latest)
+          echo "::set-output name=tag_name::$(echo $response | jq -r .tag_name)"
+          echo "::set-output name=assets::$(echo $response | jq -c .assets)"
+      - name: Download DB files
+        run: |
+          assets=$(echo "${{ steps.get_latest_release.outputs.assets }}" | jq -c '.[]')
+          for asset in $assets; do
+            name=$(echo $asset | jq -r .name)
+            if [[ "$name" == "reference.db" || "$name" == "resource.db" || "$name" == "asset.db" ]]; then
+              echo "Downloading $name"
+              download_url=$(echo $asset | jq -r .url)
+              # Use GitHub API to download the asset
+              curl -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/octet-stream" -o "$name" "$download_url"
+            fi
+          done
+      - name: Deploy Datasette using Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |-
+          datasette publish vercel reference.db \
+            --metadata metadata.yml \
+            --token $VERCEL_TOKEN \
+            --project database
