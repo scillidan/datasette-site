@@ -22,8 +22,8 @@ plugins:
   # datasette-csv-importer:
   #   status_table: _csv_importer_progress_
   #   status_database: _internal
-  #   database_path: "data/"
-  #   csvs_path: "data/reference"
+  #   database_path: "/data"
+  #   csvs_path: "/data/reference"
   # datasette-mask-columns:
   #   civitai:
   #     - mark
