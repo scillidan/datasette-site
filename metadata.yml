@@ -1,9 +1,9 @@
-title: database
+title: datasette-site
 description: 
 license: ODbL
 license_url: https://opendatacommons.org/licenses/odbl/
 source: database
-source_url: https://github.com/scillidan/database
+source_url: https://github.com/scillidan/datasette-site
 extra_css_urls:
   - "https://cdn.jsdelivr.net/gh/julien040/charcoal-datasette-theme@1.0.0/theme.min.css"
 plugins:
@@ -14,7 +14,7 @@ plugins:
         union
         '/font/' || name as path from font
     database: asset
-    base_url: https://scillidan.github.io/database
+    base_url: https://scillidan.github.io/datasette-site
   # datasette-parquet:
   #   reference:
   #     directory: "data/reference"
@@ -27,9 +27,9 @@ plugins:
   # datasette-mask-columns:
   #   civitai:
   #     - mark
-  datasette-render-markdown:
-    columns:
-      - note
+  # datasette-render-markdown:
+  #  columns:
+  #    - note
   # datasette-render-images:
   #   size_limit: 5000000
   # datasette-ripgrep:
