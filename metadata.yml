@@ -2,7 +2,7 @@ title: datasette-site
 description: 
 license: ODbL
 license_url: https://opendatacommons.org/licenses/odbl/
-source: database
+source: datasette-site
 source_url: https://github.com/scillidan/datasette-site
 extra_css_urls:
   - "https://cdn.jsdelivr.net/gh/julien040/charcoal-datasette-theme@1.0.0/theme.min.css"
