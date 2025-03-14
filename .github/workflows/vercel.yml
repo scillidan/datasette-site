@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: pip install datasette datasette-sitemap datasette-block-robots datasette-backup datasette-search-all datasette-external-links-new-tabs datasette-copyable datasette-publish-vercel
       - name: Download db files
-        run: /-
+        run: /
           wget https://github.com/scillidan/database_csv/releases/latest/download/reference.db
       - name: Deploy Datasette using Vercel
         env:
