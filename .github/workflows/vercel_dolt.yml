@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Deploy to Vercel with Dolt
 on:
   push:
     branches: [ "main" ]
@@ -26,8 +26,12 @@ jobs:
         run: |
           pip install datasette datasette-sitemap datasette-block-robots datasette-backup datasette-search-all datasette-external-links-new-tabs datasette-copyable datasette-publish-vercel
           pip install sqlite-utils
+      - name: Install Dolt
+        used: sebhoss/dolt-installer@v1
+        with:
+          version: latest
       - name: Export data from dolt
-        uses: dolthub/dolt-action@v1.0
+        uses: scillidan/dolt-action@master
         id: 'dolt_import'
         with:
           remote: scillidan/reference
