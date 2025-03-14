@@ -1,0 +1,62 @@
+name: Deploy to Vercel
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          pip install datasette datasette-sitemap datasette-block-robots datasette-backup datasette-search-all datasette-external-links-new-tabs datasette-copyable datasette-publish-vercel
+          pip install sqlite-utils
+      - name: Export data from dolt
+        uses: dolthub/dolt-action@v1.0
+        id: 'dolt_import'
+        with:
+          remote: scillidan/reference
+          dolthub_credential: ${{ secrets.DOLTHUB_CREDENTIAL }}
+          message: 'Dolt action commit'
+          commit_branch: 'main'
+          commit_user_email: scillidan@yandex.com
+          commit_author: 'scillidan'
+          push: false
+          before: |
+            dolt sql -r csv -q "SELECT * FROM `blog`" > blog.csv
+            dolt sql -r csv -q "SELECT * FROM `document`" > document.csv
+            dolt sql -r csv -q "SELECT * FROM `entry`" > entry.csv
+            dolt sql -r csv -q "SELECT * FROM `lession`" > lession.csv
+            dolt sql -r csv -q "SELECT * FROM `reference`" > reference.csv
+            dolt sql -r csv -q "SELECT * FROM `sheet`" > sheet.csv
+      - name: Insert from csvs
+        run: |
+          sqlite-utils insert reference.db blog blog.csv --csv
+          sqlite-utils insert reference.db document document.csv --csv
+          sqlite-utils insert reference.db entry entry.csv --csv
+          sqlite-utils insert reference.db lession lession.csv --csv
+          sqlite-utils insert reference.db reference reference.csv --csv
+          sqlite-utils insert reference.db sheet sheet.csv --csv
+      - name: Deploy Datasette using Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |-
+          datasette publish vercel reference.db \
+            --metadata metadata.yml \
+            --token $VERCEL_TOKEN \
+            --project datasette-site-dolt
