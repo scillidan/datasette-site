@@ -24,18 +24,27 @@ jobs:
           python-version: '3.9'
       - name: Install dependencies
         run: |
-          pip install datasette datasette-sitemap datasette-block-robots datasette-backup datasette-search-all datasette-external-links-new-tabs datasette-copyable datasette-publish-vercel
+          pip install datasette \
+            datasette-sitemap \
+            datasette-block-robots \
+            datasette-backup \
+            datasette-search-all \
+            datasette-external-links-new-tabs \
+            datasette-copyable \
+            datasette-publish-vercel
+      - name: Install dependencies
+        run: /
           pip install sqlite-utils
       - name: Export data from dolt
-        uses: scillidan/dolt-action@master
+        uses: <username>/dolt-action@master
         id: 'dolt_import'
         with:
-          remote: scillidan/reference
+          remote: <username>/reference
           dolthub_credential: ${{ secrets.DOLTHUB_CREDENTIAL }}
           message: 'Dolt action commit'
           commit_branch: 'main'
-          commit_user_email: scillidan@yandex.com
-          commit_author: 'scillidan'
+          commit_user_email: example@email.com
+          commit_author: '<username>'
           push: false
           before: |
             dolt sql -r csv -q "SELECT * FROM `blog`" > blog.csv
